@@ -4,10 +4,10 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct JsonSchema {
-    title: Option<String>,
-    description: Option<String>,
+    pub title: Option<String>,
+    pub description: Option<String>,
     #[serde(flatten)]
-    r#type: Type,
+    pub r#type: Type,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
@@ -25,30 +25,30 @@ pub enum Type {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct StringType {
-    min_length: Option<i32>,
-    max_length: Option<i32>,
-    pattern: Option<String>,
+    pub min_length: Option<i32>,
+    pub max_length: Option<i32>,
+    pub pattern: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Number {
-    multiple_of: Option<i32>,
-    minimum: Option<i32>,
-    exclusive_maximum: Option<i32>,
+    pub multiple_of: Option<i32>,
+    pub minimum: Option<i32>,
+    pub exclusive_maximum: Option<i32>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct Array {
-    items: Box<Type>,
+    pub items: Box<Type>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Object {
-    properties: HashMap<String, Type>,
-    required: Option<Vec<String>>,
-    additional_properties: Option<bool>,
+    pub properties: HashMap<String, Type>,
+    pub required: Option<Vec<String>>,
+    pub additional_properties: Option<bool>,
 }
 
 #[cfg(test)]

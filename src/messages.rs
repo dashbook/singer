@@ -13,22 +13,22 @@ pub enum Message {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Record {
-    stream: String,
-    record: Value,
-    time_extracted: Option<String>,
+    pub stream: String,
+    pub record: Value,
+    pub time_extracted: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Schema {
-    stream: String,
-    schema: JsonSchema,
-    key_properties: Vec<String>,
-    bookmark_properties: Option<Vec<String>>,
+    pub stream: String,
+    pub schema: JsonSchema,
+    pub key_properties: Vec<String>,
+    pub bookmark_properties: Option<Vec<String>>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct State {
-    value: Value,
+    pub value: Value,
 }
 
 #[cfg(test)]
