@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
+use crate::schema::JsonSchema;
+
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(tag = "type", rename_all = "UPPERCASE")]
 pub enum Message {
@@ -19,7 +21,7 @@ pub struct Record {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Schema {
     stream: String,
-    schema: Value,
+    schema: JsonSchema,
     key_properties: Vec<String>,
     bookmark_properties: Option<Vec<String>>,
 }
@@ -59,7 +61,9 @@ pub mod tests {
         let expected = Message::Schema(Schema {
             stream: "users".to_string(),
             key_properties: vec!["id".to_string()],
-            schema: json!({"required": ["id"], "type": "object", "properties": {"id": {"type": "integer"}}}),
+            schema: serde_json::from_value(
+                json!({"required": ["id"], "type": "object", "properties": {"id": {"type": "integer"}}}),
+            ).unwrap(),
             bookmark_properties: None,
         });
         assert_eq!(schema, expected);
