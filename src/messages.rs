@@ -6,6 +6,7 @@ use serde_json::Value;
 pub enum Message {
     Schema(Schema),
     Record(Record),
+    State(State),
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
@@ -23,11 +24,16 @@ pub struct Schema {
     bookmark_properties: Option<Vec<String>>,
 }
 
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub struct State {
+    value: Value,
+}
+
 #[cfg(test)]
 pub mod tests {
     use serde_json::json;
 
-    use crate::messages::{Message, Record, Schema};
+    use crate::messages::{Message, Record, Schema, State};
 
     #[test]
     fn test_record() {
@@ -55,6 +61,18 @@ pub mod tests {
             key_properties: vec!["id".to_string()],
             schema: json!({"required": ["id"], "type": "object", "properties": {"id": {"type": "integer"}}}),
             bookmark_properties: None,
+        });
+        assert_eq!(schema, expected);
+    }
+
+    #[test]
+    fn test_state() {
+        let input = r#"{"type": "STATE", "value": {"users": 2, "locations": 1}}"#;
+
+        let schema: Message = serde_json::from_str(input).unwrap();
+
+        let expected = Message::State(State {
+            value: json!({"users": 2, "locations": 1}),
         });
         assert_eq!(schema, expected);
     }
