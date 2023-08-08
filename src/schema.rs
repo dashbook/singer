@@ -11,31 +11,28 @@ pub struct JsonSchema {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
-#[serde(tag = "type", rename_all = "lowercase")]
+#[serde(untagged)]
 pub enum Type {
+    Primitive { r#type: Primitive },
+    Compound(Compound),
+    Variant { r#type: [Primitive; 2] },
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "lowercase")]
+pub enum Primitive {
     Null,
     Boolean,
     Integer,
-    Number(Number),
-    String(StringType),
+    Number,
+    String,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(tag = "type", rename_all = "lowercase")]
+pub enum Compound {
     Array(Array),
     Object(Object),
-}
-
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Default)]
-#[serde(rename_all = "camelCase")]
-pub struct StringType {
-    pub min_length: Option<i32>,
-    pub max_length: Option<i32>,
-    pub pattern: Option<String>,
-}
-
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Default)]
-#[serde(rename_all = "camelCase")]
-pub struct Number {
-    pub multiple_of: Option<i32>,
-    pub minimum: Option<i32>,
-    pub exclusive_maximum: Option<i32>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
@@ -55,7 +52,7 @@ pub struct Object {
 pub mod tests {
     use std::collections::HashMap;
 
-    use crate::schema::{Array, JsonSchema, Object, StringType, Type};
+    use crate::schema::{Array, Compound, JsonSchema, Object, Primitive, Type};
 
     #[test]
     fn test_null() {
@@ -66,7 +63,9 @@ pub mod tests {
         let expected = JsonSchema {
             title: None,
             description: None,
-            r#type: Type::Null,
+            r#type: Type::Primitive {
+                r#type: Primitive::Null,
+            },
         };
         assert_eq!(value, expected);
     }
@@ -80,7 +79,9 @@ pub mod tests {
         let expected = JsonSchema {
             title: None,
             description: None,
-            r#type: Type::Boolean,
+            r#type: Type::Primitive {
+                r#type: Primitive::Boolean,
+            },
         };
         assert_eq!(value, expected);
     }
@@ -94,7 +95,9 @@ pub mod tests {
         let expected = JsonSchema {
             title: None,
             description: None,
-            r#type: Type::Integer,
+            r#type: Type::Primitive {
+                r#type: Primitive::Integer,
+            },
         };
         assert_eq!(value, expected);
     }
@@ -108,7 +111,9 @@ pub mod tests {
         let expected = JsonSchema {
             title: None,
             description: None,
-            r#type: Type::String(StringType::default()),
+            r#type: Type::Primitive {
+                r#type: Primitive::String,
+            },
         };
         assert_eq!(value, expected);
     }
@@ -122,9 +127,11 @@ pub mod tests {
         let expected = JsonSchema {
             title: None,
             description: None,
-            r#type: Type::Array(Array {
-                items: Box::new(Type::Integer),
-            }),
+            r#type: Type::Compound(Compound::Array(Array {
+                items: Box::new(Type::Primitive {
+                    r#type: Primitive::Integer,
+                }),
+            })),
         };
         assert_eq!(value, expected);
     }
@@ -139,11 +146,39 @@ pub mod tests {
         let expected = JsonSchema {
             title: None,
             description: None,
-            r#type: Type::Object(Object {
-                properties: HashMap::from_iter(vec![("id".to_string(), Type::Integer)]),
+            r#type: Type::Compound(Compound::Object(Object {
+                properties: HashMap::from_iter(vec![(
+                    "id".to_string(),
+                    Type::Primitive {
+                        r#type: Primitive::Integer,
+                    },
+                )]),
                 required: Some(vec!["id".to_string()]),
                 additional_properties: None,
-            }),
+            })),
+        };
+        assert_eq!(schema, expected);
+    }
+
+    #[test]
+    fn test_variant() {
+        let input = r#"{"required": ["id"], "type": "object", "properties": {"id": {"type": ["integer", "null"]}}}"#;
+
+        let schema: JsonSchema = serde_json::from_str(input).unwrap();
+
+        let expected = JsonSchema {
+            title: None,
+            description: None,
+            r#type: Type::Compound(Compound::Object(Object {
+                properties: HashMap::from_iter(vec![(
+                    "id".to_string(),
+                    Type::Variant {
+                        r#type: [Primitive::Integer, Primitive::Null],
+                    },
+                )]),
+                required: Some(vec!["id".to_string()]),
+                additional_properties: None,
+            })),
         };
         assert_eq!(schema, expected);
     }
