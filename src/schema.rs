@@ -4,7 +4,9 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct JsonSchema {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     #[serde(flatten)]
     pub r#type: Type,
@@ -44,7 +46,9 @@ pub struct Array {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Object {
     pub properties: HashMap<String, Type>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub required: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub additional_properties: Option<bool>,
 }
 

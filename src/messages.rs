@@ -15,6 +15,7 @@ pub enum Message {
 pub struct Record {
     pub stream: String,
     pub record: Value,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub time_extracted: Option<String>,
 }
 
@@ -23,6 +24,7 @@ pub struct Schema {
     pub stream: String,
     pub schema: JsonSchema,
     pub key_properties: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub bookmark_properties: Option<Vec<String>>,
 }
 
