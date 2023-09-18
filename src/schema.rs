@@ -19,6 +19,7 @@ pub enum Type {
     Compound(Compound),
     Single { r#type: [Primitive; 1] },
     Variant { r#type: [Primitive; 2] },
+    Empty(Empty),
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
@@ -54,11 +55,14 @@ pub struct Object {
     pub additional_properties: Option<bool>,
 }
 
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub struct Empty {}
+
 #[cfg(test)]
 pub mod tests {
     use std::collections::HashMap;
 
-    use crate::schema::{Array, Compound, JsonSchema, Object, Primitive, Type};
+    use crate::schema::{Array, Compound, Empty, JsonSchema, Object, Primitive, Type};
 
     #[test]
     fn test_null() {
@@ -198,6 +202,24 @@ pub mod tests {
                         r#type: [Primitive::Integer, Primitive::Null],
                     },
                 )]),
+                required: Some(vec!["id".to_string()]),
+                additional_properties: None,
+            })),
+        };
+        assert_eq!(schema, expected);
+    }
+
+    #[test]
+    fn test_empty() {
+        let input = r#"{"required": ["id"], "type": "object", "properties": {"id": {}}}"#;
+
+        let schema: JsonSchema = serde_json::from_str(input).unwrap();
+
+        let expected = JsonSchema {
+            title: None,
+            description: None,
+            r#type: Type::Compound(Compound::Object(Object {
+                properties: HashMap::from_iter(vec![("id".to_string(), Type::Empty(Empty {}))]),
                 required: Some(vec!["id".to_string()]),
                 additional_properties: None,
             })),
