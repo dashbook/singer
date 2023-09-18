@@ -17,6 +17,7 @@ pub struct JsonSchema {
 pub enum Type {
     Primitive { r#type: Primitive },
     Compound(Compound),
+    Single { r#type: [Primitive; 1] },
     Variant { r#type: [Primitive; 2] },
 }
 
@@ -117,6 +118,22 @@ pub mod tests {
             description: None,
             r#type: Type::Primitive {
                 r#type: Primitive::String,
+            },
+        };
+        assert_eq!(value, expected);
+    }
+
+    #[test]
+    fn test_single() {
+        let input = r#"{"type": ["string"]}"#;
+
+        let value: JsonSchema = serde_json::from_str(input).unwrap();
+
+        let expected = JsonSchema {
+            title: None,
+            description: None,
+            r#type: Type::Single {
+                r#type: [Primitive::String; 1],
             },
         };
         assert_eq!(value, expected);
