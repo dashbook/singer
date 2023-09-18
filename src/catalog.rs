@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
 use crate::schema::JsonSchema;
 
@@ -12,6 +13,10 @@ pub struct Stream {
     pub stream: String,
     pub tap_stream_id: String,
     pub schema: JsonSchema,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub table_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<Value>,
 }
 
 #[cfg(test)]
@@ -62,6 +67,8 @@ pub mod tests {
                         ]),
                     })),
                 },
+                table_name: None,
+                metadata: None,
             }],
         };
         assert_eq!(record, expected);
