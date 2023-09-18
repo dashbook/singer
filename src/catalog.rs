@@ -10,8 +10,8 @@ pub struct Catalog {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Metadata {
-    metadata: Value,
-    breadcrumb: Vec<String>,
+    pub metadata: Value,
+    pub breadcrumb: Vec<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
