@@ -49,7 +49,7 @@ pub mod tests {
                     title: None,
                     description: None,
                     r#type: crate::schema::Type::Compound(Compound::Object(Object {
-                        additional_properties: None,
+                        additional_properties: Some(false),
                         required: None,
                         properties: HashMap::from_iter(vec![
                             (

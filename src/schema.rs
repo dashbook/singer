@@ -45,6 +45,7 @@ pub struct Array {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
 pub struct Object {
     pub properties: HashMap<String, Type>,
     #[serde(skip_serializing_if = "Option::is_none")]
