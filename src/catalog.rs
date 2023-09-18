@@ -9,6 +9,12 @@ pub struct Catalog {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub struct Metadata {
+    metadata: Value,
+    breadcrumb: Vec<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Stream {
     pub stream: String,
     pub tap_stream_id: String,
@@ -16,7 +22,7 @@ pub struct Stream {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub table_name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<Value>,
+    pub metadata: Option<Vec<Metadata>>,
 }
 
 #[cfg(test)]
