@@ -4,11 +4,12 @@ use serde_json::Value;
 use crate::schema::JsonSchema;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
-#[serde(tag = "type", rename_all = "UPPERCASE")]
+#[serde(tag = "type", rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum Message {
     Schema(Schema),
     Record(Record),
     State(State),
+    ActivateVersion(ActivateVersion),
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
@@ -33,11 +34,17 @@ pub struct State {
     pub value: Value,
 }
 
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub struct ActivateVersion {
+    pub stream: String,
+    pub version: i64,
+}
+
 #[cfg(test)]
 pub mod tests {
     use serde_json::json;
 
-    use crate::messages::{Message, Record, Schema, State};
+    use crate::messages::{ActivateVersion, Message, Record, Schema, State};
 
     #[test]
     fn test_record() {
@@ -79,6 +86,19 @@ pub mod tests {
 
         let expected = Message::State(State {
             value: json!({"users": 2, "locations": 1}),
+        });
+        assert_eq!(schema, expected);
+    }
+
+    #[test]
+    fn test_activate_version() {
+        let input = r#"{"type": "ACTIVATE_VERSION", "stream": "users", "version": 1695106400957}"#;
+
+        let schema: Message = serde_json::from_str(input).unwrap();
+
+        let expected = Message::ActivateVersion(ActivateVersion {
+            stream: "users".to_string(),
+            version: 1695106400957,
         });
         assert_eq!(schema, expected);
     }
