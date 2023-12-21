@@ -15,10 +15,28 @@ pub struct JsonSchema {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(untagged)]
 pub enum Type {
-    Primitive { r#type: Primitive },
+    PrimitiveDate {
+        r#type: PrimitiveDate,
+        format: DateFormat,
+    },
+    SingleDate {
+        r#type: [PrimitiveDate; 1],
+        format: DateFormat,
+    },
+    VariantDate {
+        r#type: [PrimitiveDate; 2],
+        format: DateFormat,
+    },
+    Primitive {
+        r#type: Primitive,
+    },
+    Single {
+        r#type: [Primitive; 1],
+    },
+    Variant {
+        r#type: [Primitive; 2],
+    },
     Compound(Compound),
-    Single { r#type: [Primitive; 1] },
-    Variant { r#type: [Primitive; 2] },
     Empty(Empty),
 }
 
@@ -30,6 +48,19 @@ pub enum Primitive {
     Integer,
     Number,
     String,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "lowercase")]
+pub enum PrimitiveDate {
+    Null,
+    String,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case")]
+pub enum DateFormat {
+    DateTime,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
@@ -62,7 +93,9 @@ pub struct Empty {}
 pub mod tests {
     use std::collections::HashMap;
 
-    use crate::schema::{Array, Compound, Empty, JsonSchema, Object, Primitive, Type};
+    use crate::schema::{
+        Array, Compound, DateFormat, Empty, JsonSchema, Object, Primitive, PrimitiveDate, Type,
+    };
 
     #[test]
     fn test_null() {
@@ -203,6 +236,42 @@ pub mod tests {
                     },
                 )]),
                 required: Some(vec!["id".to_string()]),
+                additional_properties: None,
+            })),
+        };
+        assert_eq!(schema, expected);
+    }
+
+    #[test]
+    fn test_date() {
+        let input = r#"
+        {
+        "type": "object",
+        "properties": {
+          "order_date": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }}
+       "#;
+
+        let schema: JsonSchema = serde_json::from_str(input).unwrap();
+
+        let expected = JsonSchema {
+            title: None,
+            description: None,
+            r#type: Type::Compound(Compound::Object(Object {
+                properties: HashMap::from_iter(vec![(
+                    "order_date".to_string(),
+                    Type::VariantDate {
+                        r#type: [PrimitiveDate::Null, PrimitiveDate::String],
+                        format: DateFormat::DateTime,
+                    },
+                )]),
+                required: None,
                 additional_properties: None,
             })),
         };
