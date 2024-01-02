@@ -3,7 +3,7 @@ use serde_json::Value;
 
 use crate::schema::JsonSchema;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(tag = "type", rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum Message {
     Schema(Schema),
@@ -12,7 +12,7 @@ pub enum Message {
     ActivateVersion(ActivateVersion),
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Record {
     pub stream: String,
     pub record: Value,
@@ -20,7 +20,7 @@ pub struct Record {
     pub time_extracted: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Schema {
     pub stream: String,
     pub schema: JsonSchema,
@@ -29,12 +29,12 @@ pub struct Schema {
     pub bookmark_properties: Option<Vec<String>>,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct State {
     pub value: Value,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct ActivateVersion {
     pub stream: String,
     pub version: i64,
