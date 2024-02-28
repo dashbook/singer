@@ -3,7 +3,11 @@ name = "singer"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "Rust Singer SDK"
+
+license = "Apache-2.0"
+
+repository = "https://github.com/dashbook/singer"
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
