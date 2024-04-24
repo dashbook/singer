@@ -32,7 +32,7 @@ pub mod tests {
 
     use crate::{
         catalog::{Catalog, Stream},
-        schema::{Compound, DateFormat, Object, Primitive, PrimitiveDate, Type},
+        schema::{Compound, Format, Object, Primitive, PrimitiveFormat, Type},
     };
 
     #[test]
@@ -66,9 +66,9 @@ pub mod tests {
                             ),
                             (
                                 "updated_at".to_string(),
-                                Type::PrimitiveDate {
-                                    r#type: PrimitiveDate::String,
-                                    format: DateFormat::DateTime,
+                                Type::PrimitiveFormat {
+                                    r#type: PrimitiveFormat::String,
+                                    format: Format::DateTime,
                                 },
                             ),
                         ]),

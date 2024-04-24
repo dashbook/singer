@@ -15,18 +15,6 @@ pub struct JsonSchema {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(untagged)]
 pub enum Type {
-    PrimitiveDate {
-        r#type: PrimitiveDate,
-        format: DateFormat,
-    },
-    SingleDate {
-        r#type: [PrimitiveDate; 1],
-        format: DateFormat,
-    },
-    VariantDate {
-        r#type: [PrimitiveDate; 2],
-        format: DateFormat,
-    },
     Primitive {
         r#type: Primitive,
     },
@@ -35,6 +23,18 @@ pub enum Type {
     },
     Variant {
         r#type: [Primitive; 2],
+    },
+    PrimitiveFormat {
+        r#type: PrimitiveFormat,
+        format: Format,
+    },
+    SingleFormat {
+        r#type: [PrimitiveFormat; 1],
+        format: Format,
+    },
+    VariantFormat {
+        r#type: [PrimitiveFormat; 2],
+        format: Format,
     },
     Compound(Compound),
     Empty(Empty),
@@ -52,14 +52,16 @@ pub enum Primitive {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
-pub enum PrimitiveDate {
+pub enum PrimitiveFormat {
     Null,
     String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "kebab-case")]
-pub enum DateFormat {
+pub enum Format {
+    Date,
+    Time,
     DateTime,
 }
 
@@ -94,7 +96,7 @@ pub mod tests {
     use std::collections::HashMap;
 
     use crate::schema::{
-        Array, Compound, DateFormat, Empty, JsonSchema, Object, Primitive, PrimitiveDate, Type,
+        Array, Compound, Empty, Format, JsonSchema, Object, Primitive, PrimitiveFormat, Type,
     };
 
     #[test]
@@ -266,9 +268,9 @@ pub mod tests {
             r#type: Type::Compound(Compound::Object(Object {
                 properties: HashMap::from_iter(vec![(
                     "order_date".to_string(),
-                    Type::VariantDate {
-                        r#type: [PrimitiveDate::Null, PrimitiveDate::String],
-                        format: DateFormat::DateTime,
+                    Type::VariantFormat {
+                        r#type: [PrimitiveFormat::Null, PrimitiveFormat::String],
+                        format: Format::DateTime,
                     },
                 )]),
                 required: None,
