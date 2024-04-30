@@ -18,6 +18,8 @@ pub struct Record {
     pub record: Value,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub time_extracted: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub version: Option<i64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
